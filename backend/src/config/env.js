@@ -6,7 +6,9 @@ dotenv.config();
 const envSchema = z.object({
   NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
   PORT: z.coerce.number().default(5000),
-  CLIENT_ORIGIN: z.string().url().default('http://localhost:5173'),
+  CLIENT_ORIGIN: z
+    .string()
+    .default('http://localhost:5173,https://mobupps-assesment.vercel.app'),
 
   SUPABASE_URL: z.string().url(),
   SUPABASE_SERVICE_ROLE_KEY: z.string().min(1),
@@ -28,4 +30,8 @@ if (!parsed.success) {
   process.exit(1);
 }
 
-module.exports = parsed.data;
+const clientOrigins = parsed.data.CLIENT_ORIGIN.split(',')
+  .map((origin) => origin.trim().replace(/\/$/, ''))
+  .filter(Boolean);
+
+module.exports = { ...parsed.data, CLIENT_ORIGINS: clientOrigins };

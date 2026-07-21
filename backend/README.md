@@ -39,7 +39,7 @@ See [`.env.example`](.env.example):
 | Variable | Description |
 |---|---|
 | `PORT` | Port the API listens on (default `5000`) |
-| `CLIENT_ORIGIN` | Frontend origin allowed by CORS (default `http://localhost:5173`) |
+| `CLIENT_ORIGIN` | Comma-separated frontend origins allowed by CORS (default `http://localhost:5173,https://mobupps-assesment.vercel.app`) |
 | `SUPABASE_URL` | Your Supabase project URL |
 | `SUPABASE_SERVICE_ROLE_KEY` | Supabase service-role key (server-side only, never expose to the client) |
 | `JWT_ACCESS_SECRET` | Strong random secret used to sign access tokens |
