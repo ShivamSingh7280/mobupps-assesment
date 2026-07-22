@@ -1,6 +1,5 @@
 import { createTheme } from '@mui/material/styles';
 
-export const serifFontFamily = ['Georgia', '"Times New Roman"', 'Times', 'serif'].join(',');
 export const monoFontFamily = [
   'ui-monospace',
   'SFMono-Regular',
@@ -42,7 +41,7 @@ const theme = createTheme({
   },
   typography: {
     fontFamily: [
-      'Inter',
+      'Poppins',
       '-apple-system',
       'BlinkMacSystemFont',
       '"Segoe UI"',
@@ -51,12 +50,12 @@ const theme = createTheme({
       'Arial',
       'sans-serif',
     ].join(','),
-    h1: { fontWeight: 700, fontFamily: serifFontFamily },
-    h2: { fontWeight: 700, fontFamily: serifFontFamily },
-    h3: { fontWeight: 600, fontFamily: serifFontFamily },
-    h4: { fontWeight: 600, fontFamily: serifFontFamily },
-    h5: { fontWeight: 600, fontFamily: serifFontFamily },
-    h6: { fontWeight: 600, fontFamily: serifFontFamily },
+    h1: { fontWeight: 700 },
+    h2: { fontWeight: 700 },
+    h3: { fontWeight: 600 },
+    h4: { fontWeight: 600 },
+    h5: { fontWeight: 600 },
+    h6: { fontWeight: 600 },
     button: { fontWeight: 600, textTransform: 'none' },
   },
   components: {

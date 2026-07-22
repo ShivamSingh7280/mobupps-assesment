@@ -1,13 +1,10 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 
 // mui
 import { Container, Box, Typography, Button, Stack } from '@mui/material';
 
 // mui icons
 import AddIcon from '@mui/icons-material/Add';
-
-// theme
-import { serifFontFamily } from '../theme/theme';
 
 // components
 import SearchBar from '../components/products/SearchBar';
@@ -28,13 +25,14 @@ import { useToast } from '../components/common/ToastProvider';
 // auth
 import { useAuth } from '../hooks/useAuth';
 
-const PAGE_SIZE = 6;
+const DEFAULT_PAGE_SIZE = 6;
 
 export default function ProductsPage() {
   const { user, logout } = useAuth();
   const { showToast } = useToast();
 
   const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE);
   const [searchInput, setSearchInput] = useState('');
   const debouncedSearch = useDebounce(searchInput, 800);
   const [filters, setFilters] = useState(EMPTY_FILTERS);
@@ -44,13 +42,38 @@ export default function ProductsPage() {
 
   const productsQuery = useProducts({
     page,
-    limit: PAGE_SIZE,
+    limit: pageSize,
     search: debouncedSearch,
     category: filters.category,
     stockStatus: filters.stockStatus,
     minPrice: filters.minPrice,
     maxPrice: filters.maxPrice,
   });
+  // isFetching flips on for page/filter changes too; track search-triggered
+  // fetches separately so the search bar's loader only shows for those.
+  const [isSearchLoading, setIsSearchLoading] = useState(false);
+  const searchChangedRef = useRef(false);
+  const isFirstSearchRender = useRef(true);
+
+  useEffect(() => {
+    if (isFirstSearchRender.current) {
+      isFirstSearchRender.current = false;
+      return;
+    }
+    searchChangedRef.current = true;
+  }, [debouncedSearch]);
+
+  useEffect(() => {
+    if (productsQuery.isFetching) {
+      if (searchChangedRef.current) {
+        searchChangedRef.current = false;
+        setIsSearchLoading(true);
+      }
+    } else {
+      setIsSearchLoading(false);
+    }
+  }, [productsQuery.isFetching]);
+
   const createMutation = useCreateProduct();
   const updateMutation = useUpdateProduct();
   const deleteMutation = useDeleteProduct();
@@ -62,6 +85,11 @@ export default function ProductsPage() {
 
   const handleFiltersApply = useCallback((nextFilters) => {
     setFilters(nextFilters);
+    setPage(1);
+  }, []);
+
+  const handlePageSizeChange = useCallback((nextPageSize) => {
+    setPageSize(nextPageSize);
     setPage(1);
   }, []);
 
@@ -123,7 +151,7 @@ export default function ProductsPage() {
           sx={{ py: 2.5, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}
         >
           <Stack direction="row" spacing={1} alignItems="baseline">
-            <Typography variant="h6" sx={{ fontFamily: serifFontFamily, fontWeight: 700 }}>
+            <Typography variant="h6" sx={{ fontWeight: 700 }}>
               Ledger
             </Typography>
             <Typography
@@ -151,7 +179,7 @@ export default function ProductsPage() {
             <SearchBar
               value={searchInput}
               onChange={handleSearchChange}
-              isSearching={productsQuery.isFetching} />
+              isSearching={isSearchLoading} />
           </Box>
           <FiltersPanel filters={filters} onApply={handleFiltersApply} />
           <Button
@@ -160,7 +188,7 @@ export default function ProductsPage() {
             size="large"
             startIcon={<AddIcon />}
             onClick={handleOpenCreate}
-            sx={{ whiteSpace: 'nowrap', px: 3 }}
+            sx={{ whiteSpace: 'nowrap', px: 3, borderRadius: '4px' }}
           >
             Add product
           </Button>
@@ -181,7 +209,14 @@ export default function ProductsPage() {
         />
       </Container>
 
-      <PaginationBar page={page} totalPages={totalPages} total={meta?.total} pageSize={PAGE_SIZE} onChange={setPage} />
+      <PaginationBar
+        page={page}
+        totalPages={totalPages}
+        total={meta?.total}
+        pageSize={pageSize}
+        onChange={setPage}
+        onPageSizeChange={handlePageSizeChange}
+      />
 
       <AddEditProductModal
         open={modalState.open}

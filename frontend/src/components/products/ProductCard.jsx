@@ -4,7 +4,7 @@ import MoreVertIcon from '@mui/icons-material/MoreVert';
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import Inventory2OutlinedIcon from '@mui/icons-material/Inventory2Outlined';
-import { monoFontFamily, serifFontFamily } from '../../theme/theme';
+import { monoFontFamily } from '../../theme/theme';
 import { getOptimizedImageUrl, getImageSrcSet } from '../../utils/cloudinaryImage';
 
 const CARD_IMAGE_HEIGHT = 180;
@@ -61,7 +61,7 @@ function ProductCard({ product, onEdit, onDelete }) {
         display: 'flex',
         flexDirection: 'column',
         position: 'relative',
-        borderRadius: 3,
+        borderRadius: '10px',
         overflow: 'hidden',
         transition: 'box-shadow 200ms ease, transform 200ms ease',
         '&:hover': { boxShadow: 3, transform: 'translateY(-2px)' },
@@ -135,12 +135,7 @@ function ProductCard({ product, onEdit, onDelete }) {
       </Box>
 
       <CardContent sx={{ flexGrow: 1 }}>
-        <Typography
-          variant="subtitle1"
-          sx={{ fontFamily: serifFontFamily, fontWeight: 700 }}
-          noWrap
-          title={product.name}
-        >
+        <Typography variant="subtitle1" sx={{ fontWeight: 700 }} noWrap title={product.name}>
           {product.name}
         </Typography>
         {product.description && (

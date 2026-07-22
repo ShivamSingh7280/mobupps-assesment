@@ -11,7 +11,7 @@ function SearchBar({ value, onChange, isSearching }) {
       onChange={(event) => onChange(event.target.value)}
       sx={{
         '& .MuiOutlinedInput-root': {
-          borderRadius: 999,
+          borderRadius: '10px',
           bgcolor: 'background.paper',
         },
       }}

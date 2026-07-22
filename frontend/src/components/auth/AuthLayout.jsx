@@ -1,5 +1,4 @@
 import { Box, Stack, Typography } from '@mui/material';
-import { serifFontFamily } from '../../theme/theme';
 
 const stats = [
   { value: '12,400+', label: 'products managed' },
@@ -24,7 +23,7 @@ export default function AuthLayout({ title, subtitle, children }) {
           pb: 7,
         }}
       >
-        <Typography variant="h5" sx={{ fontFamily: serifFontFamily, fontWeight: 700 }}>
+        <Typography variant="h5" sx={{ fontWeight: 700 }}>
           Ledger
         </Typography>
         <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.75)', mt: 1.5, maxWidth: 320 }}>
@@ -57,15 +56,12 @@ export default function AuthLayout({ title, subtitle, children }) {
               p: 6,
             }}
           >
-            <Typography variant="h5" sx={{ fontFamily: serifFontFamily, fontWeight: 700 }}>
+            <Typography variant="h5" sx={{ fontWeight: 700 }}>
               Ledger
             </Typography>
 
             <Box>
-              <Typography
-                variant="h3"
-                sx={{ fontFamily: serifFontFamily, fontWeight: 700, mb: 2, lineHeight: 1.25 }}
-              >
+              <Typography variant="h3" sx={{ fontWeight: 700, mb: 2, lineHeight: 1.25 }}>
                 Manage your entire catalog from one place.
               </Typography>
               <Typography variant="body1" sx={{ color: 'rgba(255,255,255,0.7)', maxWidth: 420 }}>
@@ -76,7 +72,7 @@ export default function AuthLayout({ title, subtitle, children }) {
             <Stack direction="row" spacing={5}>
               {stats.map((stat) => (
                 <Box key={stat.label}>
-                  <Typography variant="h5" sx={{ fontFamily: serifFontFamily, fontWeight: 700 }}>
+                  <Typography variant="h5" sx={{ fontWeight: 700 }}>
                     {stat.value}
                   </Typography>
                   <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.6)' }}>

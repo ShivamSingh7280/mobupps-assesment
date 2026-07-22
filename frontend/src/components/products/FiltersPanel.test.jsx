@@ -34,6 +34,7 @@ describe('FiltersPanel', () => {
     const { onApply } = renderPanel();
     fireEvent.click(screen.getByRole('button', { name: /filters/i }));
     fireEvent.click(screen.getByLabelText('Food'));
+    fireEvent.click(screen.getByText('Stock'));
     fireEvent.click(screen.getByLabelText('In stock'));
     fireEvent.click(screen.getByRole('button', { name: 'Apply' }));
 
@@ -48,6 +49,7 @@ describe('FiltersPanel', () => {
   it('applies a price range', () => {
     const { onApply } = renderPanel();
     fireEvent.click(screen.getByRole('button', { name: /filters/i }));
+    fireEvent.click(screen.getByText('Price'));
     fireEvent.change(screen.getByLabelText('Min'), { target: { value: '10' } });
     fireEvent.change(screen.getByLabelText('Max'), { target: { value: '50' } });
     fireEvent.click(screen.getByRole('button', { name: 'Apply' }));

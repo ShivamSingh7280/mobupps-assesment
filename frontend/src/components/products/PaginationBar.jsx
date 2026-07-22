@@ -1,9 +1,22 @@
-import { Box, Button, Paper, Typography } from '@mui/material';
+import { useState } from 'react';
+import { Box, MenuItem, Pagination, Paper, Stack, TextField, Typography } from '@mui/material';
 
-export default function PaginationBar({ page, totalPages, total, pageSize, onChange }) {
+const PAGE_SIZE_OPTIONS = [6, 12, 18, 24, 30];
+
+export default function PaginationBar({ page, totalPages, total, pageSize, onChange, onPageSizeChange }) {
   const hasItems = Boolean(total);
   const rangeStart = hasItems ? (page - 1) * pageSize + 1 : 0;
   const rangeEnd = hasItems ? Math.min(page * pageSize, total) : 0;
+
+  const [jumpValue, setJumpValue] = useState('');
+
+  const commitJump = () => {
+    const parsed = Number(jumpValue);
+    if (Number.isInteger(parsed) && parsed >= 1 && parsed <= totalPages && parsed !== page) {
+      onChange(parsed);
+    }
+    setJumpValue('');
+  };
 
   return (
     <Paper
@@ -16,8 +29,10 @@ export default function PaginationBar({ page, totalPages, total, pageSize, onCha
         py: 1.5,
         px: { xs: 2, sm: 4 },
         display: 'flex',
+        flexWrap: 'wrap',
         alignItems: 'center',
         justifyContent: 'space-between',
+        gap: 1.5,
         borderRadius: 0,
         borderTop: '1px solid',
         borderColor: 'divider',
@@ -28,29 +43,49 @@ export default function PaginationBar({ page, totalPages, total, pageSize, onCha
         {hasItems ? `${rangeStart}–${rangeEnd} of ${total}` : 'No results'}
       </Typography>
 
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-        <Button
-          variant="outlined"
-          color="inherit"
+      <Stack direction="row" spacing={2} alignItems="center" flexWrap="wrap" useFlexGap>
+        <TextField
+          select
           size="small"
-          disabled={page <= 1}
-          onClick={() => onChange(page - 1)}
-        >
-          Previous
-        </Button>
-        <Typography variant="body2" color="text.secondary">
-          {page} / {totalPages}
-        </Typography>
-        <Button
           variant="outlined"
-          color="inherit"
-          size="small"
-          disabled={page >= totalPages}
-          onClick={() => onChange(page + 1)}
+          label="Per page"
+          value={pageSize}
+          onChange={(event) => onPageSizeChange(Number(event.target.value))}
+          sx={{ width: 110 }}
         >
-          Next
-        </Button>
-      </Box>
+          {PAGE_SIZE_OPTIONS.map((option) => (
+            <MenuItem key={option} value={option}>
+              {option} Products
+            </MenuItem>
+          ))}
+        </TextField>
+
+        <Pagination
+          page={page}
+          count={totalPages}
+          onChange={(event, value) => onChange(value)}
+          color="secondary"
+          shape="rounded"
+          showFirstButton
+          showLastButton
+          siblingCount={1}
+          boundaryCount={1}
+        />
+
+        <Box component="form" onSubmit={(event) => { event.preventDefault(); commitJump(); }}>
+          <TextField
+            size="small"
+            type="number"
+            variant="outlined"
+            placeholder="Go to"
+            value={jumpValue}
+            onChange={(event) => setJumpValue(event.target.value)}
+            onBlur={commitJump}
+            slotProps={{ htmlInput: { min: 1, max: totalPages, 'aria-label': 'Jump to page' } }}
+            sx={{ width: 90 }}
+          />
+        </Box>
+      </Stack>
     </Paper>
   );
 }
