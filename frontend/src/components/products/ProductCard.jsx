@@ -5,6 +5,11 @@ import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import Inventory2OutlinedIcon from '@mui/icons-material/Inventory2Outlined';
 import { monoFontFamily, serifFontFamily } from '../../theme/theme';
+import { getOptimizedImageUrl, getImageSrcSet } from '../../utils/cloudinaryImage';
+
+const CARD_IMAGE_HEIGHT = 180;
+const CARD_IMAGE_WIDTHS = [240, 360, 480, 720];
+const CARD_IMAGE_SIZES = '(max-width: 600px) 100vw, (max-width: 900px) 50vw, 33vw';
 
 const currencyFormatter = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' });
 
@@ -104,9 +109,13 @@ function ProductCard({ product, onEdit, onDelete }) {
         {product.image_url ? (
           <CardMedia
             component="img"
-            height={180}
-            image={product.image_url}
+            height={CARD_IMAGE_HEIGHT}
+            image={getOptimizedImageUrl(product.image_url, { width: 480, height: CARD_IMAGE_HEIGHT * 2 })}
+            srcSet={getImageSrcSet(product.image_url, CARD_IMAGE_WIDTHS, { height: CARD_IMAGE_HEIGHT * 2 })}
+            sizes={CARD_IMAGE_SIZES}
             alt={product.name}
+            loading="lazy"
+            decoding="async"
             sx={{ objectFit: 'cover' }}
           />
         ) : (

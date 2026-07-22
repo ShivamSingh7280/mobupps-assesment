@@ -26,6 +26,7 @@ import CategoryOutlinedIcon from '@mui/icons-material/CategoryOutlined';
 import { productSchema } from '../../utils/validationSchemas';
 import { useCloudinaryUpload } from '../../hooks/useCloudinaryUpload';
 import { useCategories } from '../../hooks/useCategories';
+import { getOptimizedImageUrl } from '../../utils/cloudinaryImage';
 
 const emptyDefaults = { category: '', name: '', description: '', price: '', stock_quantity: 0 };
 
@@ -166,7 +167,11 @@ export default function AddEditProductModal({ open, product, onClose, onSubmit, 
           <DialogContent dividers>
             <Stack spacing={2.5}>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                <Avatar variant="rounded" src={imagePreview} sx={{ width: 72, height: 72, bgcolor: 'grey.100' }}>
+                <Avatar
+                  variant="rounded"
+                  src={getOptimizedImageUrl(imagePreview, { width: 144, height: 144 })}
+                  sx={{ width: 72, height: 72, bgcolor: 'grey.100' }}
+                >
                   <Inventory2OutlinedIcon color="disabled" />
                 </Avatar>
                 <Button
