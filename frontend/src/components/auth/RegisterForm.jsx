@@ -126,13 +126,13 @@ export default function RegisterForm() {
       />
 
       <Button type="submit" variant="contained" color="secondary" size="large" fullWidth disabled={isSubmitting}>
-        {isSubmitting ? 'Creating account…' : 'Create Account'}
+        {isSubmitting ? 'Creating account…' : 'Create account'}
       </Button>
 
       <Typography variant="body2" color="text.secondary" textAlign="center">
         Already have an account?{' '}
         <Link component={RouterLink} to="/login" color="secondary" underline="hover">
-          Sign in here
+          Sign in
         </Link>
       </Typography>
     </Stack>

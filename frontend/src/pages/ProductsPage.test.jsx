@@ -11,8 +11,8 @@ import ProductsPage from './ProductsPage';
 const API_BASE = 'http://localhost:5000/api/v1';
 
 const initialProducts = [
-  { id: '1', name: 'Nike Air Max 270', description: 'Comfortable sneaker', price: 139.99, stock_quantity: 12, image_url: null },
-  { id: '2', name: 'Classic Wallet', description: 'Leather wallet', price: 29.5, stock_quantity: 0, image_url: null },
+  { id: '1', name: 'Nike Air Max 270', description: 'Comfortable sneaker', category: 'Fashion', price: 139.99, stock_quantity: 12, image_url: null },
+  { id: '2', name: 'Classic Wallet', description: 'Leather wallet', category: 'Fashion', price: 29.5, stock_quantity: 0, image_url: null },
 ];
 
 let products = [...initialProducts];
@@ -23,6 +23,9 @@ const server = setupServer(
   ),
   http.get(`${API_BASE}/auth/me`, () =>
     HttpResponse.json({ success: true, data: { user: { id: 'u1', name: 'Test User', email: 'test@example.com' } } })
+  ),
+  http.get(`${API_BASE}/products/categories`, () =>
+    HttpResponse.json({ success: true, data: ['Pharma', 'Food', 'Defence', 'Fashion', 'Electronics', 'Furniture'] })
   ),
   http.get(`${API_BASE}/products`, ({ request }) => {
     const url = new URL(request.url);
@@ -98,8 +101,11 @@ describe('ProductsPage', () => {
     renderProductsPage();
     await screen.findByText('Nike Air Max 270');
 
-    fireEvent.click(screen.getByText('Add Product'));
+    fireEvent.click(screen.getByRole('button', { name: 'Add product' }));
     const dialog = await screen.findByRole('dialog');
+
+    fireEvent.mouseDown(within(dialog).getByLabelText('Category'));
+    fireEvent.click(await screen.findByRole('option', { name: 'Food' }));
 
     fireEvent.change(within(dialog).getByLabelText(/product name/i), { target: { value: 'Test Sneaker' } });
     fireEvent.change(within(dialog).getByLabelText(/^price/i), { target: { value: '59.99' } });
@@ -114,8 +120,11 @@ describe('ProductsPage', () => {
     renderProductsPage();
     await screen.findByText('Nike Air Max 270');
 
-    fireEvent.click(screen.getByText('Add Product'));
+    fireEvent.click(screen.getByRole('button', { name: 'Add product' }));
     const dialog = await screen.findByRole('dialog');
+
+    fireEvent.mouseDown(within(dialog).getByLabelText('Category'));
+    fireEvent.click(await screen.findByRole('option', { name: 'Food' }));
 
     fireEvent.click(within(dialog).getByRole('button', { name: 'Add product' }));
 

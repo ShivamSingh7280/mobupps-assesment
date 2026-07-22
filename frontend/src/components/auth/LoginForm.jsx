@@ -88,13 +88,13 @@ export default function LoginForm() {
       />
 
       <Button type="submit" variant="contained" color="secondary" size="large" fullWidth disabled={isSubmitting}>
-        {isSubmitting ? 'Logging in…' : 'Log in'}
+        {isSubmitting ? 'Signing in…' : 'Sign in'}
       </Button>
 
       <Typography variant="body2" color="text.secondary" textAlign="center">
-        Don&apos;t have an account?{' '}
+        New seller?{' '}
         <Link component={RouterLink} to="/register" color="secondary" underline="hover">
-          Sign up here
+          Create an account
         </Link>
       </Typography>
     </Stack>

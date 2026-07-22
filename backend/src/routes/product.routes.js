@@ -13,6 +13,7 @@ const router = Router();
 
 router.use(requireAuth);
 
+router.get('/categories', productController.categories);
 router.get('/', validate(listProductsQuerySchema, 'query'), productController.list);
 router.get('/:id', validate(productIdParamSchema, 'params'), productController.getOne);
 router.post('/', validate(createProductSchema), productController.create);

@@ -31,13 +31,31 @@ axiosClient.interceptors.request.use((config) => {
   return config;
 });
 
+// Module-level (not per-call) so every caller — the AuthContext bootstrap
+// effect, the 401 retry handler below, or anything else — shares a single
+// in-flight refresh instead of firing concurrent /auth/refresh requests.
+// The refresh token rotates and is single-use server-side, so two
+// concurrent calls would race: the second would arrive with an
+// already-rotated token, look like a replay/theft attempt, and the backend
+// revokes every session for the user in response — logging them out even
+// though they never asked to log out. Collapsing to one shared promise
+// makes that race impossible.
 let refreshPromise = null;
 
 export async function silentRefresh() {
-  const { data } = await refreshClient.post('/auth/refresh');
-  const token = data?.data?.accessToken;
-  setAccessToken(token);
-  return token;
+  if (!refreshPromise) {
+    refreshPromise = refreshClient
+      .post('/auth/refresh')
+      .then(({ data }) => {
+        const token = data?.data?.accessToken;
+        setAccessToken(token);
+        return token;
+      })
+      .finally(() => {
+        refreshPromise = null;
+      });
+  }
+  return refreshPromise;
 }
 
 axiosClient.interceptors.response.use(
@@ -50,12 +68,7 @@ axiosClient.interceptors.response.use(
     if (status === 401 && !originalRequest._retry && !isAuthEndpoint) {
       originalRequest._retry = true;
       try {
-        if (!refreshPromise) {
-          refreshPromise = silentRefresh().finally(() => {
-            refreshPromise = null;
-          });
-        }
-        const newAccessToken = await refreshPromise;
+        const newAccessToken = await silentRefresh();
         originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
         return axiosClient(originalRequest);
       } catch (refreshError) {

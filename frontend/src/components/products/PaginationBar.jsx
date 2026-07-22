@@ -1,7 +1,9 @@
-import { Pagination, Paper } from '@mui/material';
+import { Box, Button, Paper, Typography } from '@mui/material';
 
-export default function PaginationBar({ page, totalPages, onChange }) {
-  const disabled = totalPages <= 1;
+export default function PaginationBar({ page, totalPages, total, pageSize, onChange }) {
+  const hasItems = Boolean(total);
+  const rangeStart = hasItems ? (page - 1) * pageSize + 1 : 0;
+  const rangeEnd = hasItems ? Math.min(page * pageSize, total) : 0;
 
   return (
     <Paper
@@ -12,22 +14,43 @@ export default function PaginationBar({ page, totalPages, onChange }) {
         left: 0,
         right: 0,
         py: 1.5,
+        px: { xs: 2, sm: 4 },
         display: 'flex',
-        justifyContent: 'center',
+        alignItems: 'center',
+        justifyContent: 'space-between',
         borderRadius: 0,
         borderTop: '1px solid',
         borderColor: 'divider',
         zIndex: 2,
       }}
     >
-      <Pagination
-        page={page}
-        count={totalPages || 1}
-        color="secondary"
-        shape="rounded"
-        disabled={disabled}
-        onChange={(_event, value) => onChange(value)}
-      />
+      <Typography variant="body2" color="text.secondary" sx={{ fontVariantNumeric: 'tabular-nums' }}>
+        {hasItems ? `${rangeStart}–${rangeEnd} of ${total}` : 'No results'}
+      </Typography>
+
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+        <Button
+          variant="outlined"
+          color="inherit"
+          size="small"
+          disabled={page <= 1}
+          onClick={() => onChange(page - 1)}
+        >
+          Previous
+        </Button>
+        <Typography variant="body2" color="text.secondary">
+          {page} / {totalPages}
+        </Typography>
+        <Button
+          variant="outlined"
+          color="inherit"
+          size="small"
+          disabled={page >= totalPages}
+          onClick={() => onChange(page + 1)}
+        >
+          Next
+        </Button>
+      </Box>
     </Paper>
   );
 }

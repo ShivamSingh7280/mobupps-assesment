@@ -4,7 +4,7 @@
 // `.insert()`) or terminates the chain with `.single()` / `.maybeSingle()`.
 function createQueryBuilder(result) {
   const builder = {};
-  const chainMethods = ['select', 'insert', 'update', 'delete', 'eq', 'or', 'order', 'range', 'is'];
+  const chainMethods = ['select', 'insert', 'update', 'delete', 'eq', 'or', 'order', 'range', 'is', 'in', 'gt', 'gte', 'lte'];
 
   chainMethods.forEach((method) => {
     builder[method] = jest.fn(() => builder);

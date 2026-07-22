@@ -2,7 +2,9 @@ const supabase = require('../config/supabaseClient');
 const ApiError = require('../utils/ApiError');
 const { destroyImageBestEffort } = require('./upload.service');
 
-const PRODUCT_FIELDS = 'id, name, description, price, stock_quantity, image_url, image_public_id, created_by, created_at, updated_at';
+const PRODUCT_FIELDS = 'id, name, description, category, price, stock_quantity, image_url, image_public_id, created_by, created_at, updated_at';
+
+const LOW_STOCK_THRESHOLD = 5;
 
 function buildSearchPattern(rawTerm) {
   const withoutFilterMetachars = rawTerm.replace(/[,()]/g, '');
@@ -10,7 +12,14 @@ function buildSearchPattern(rawTerm) {
   return `%${withEscapedWildcards}%`;
 }
 
-async function listProducts({ page, limit, search }) {
+function applyStockStatusFilter(query, stockStatus) {
+  if (stockStatus === 'out_of_stock') return query.lte('stock_quantity', 0);
+  if (stockStatus === 'low_stock') return query.gte('stock_quantity', 1).lte('stock_quantity', LOW_STOCK_THRESHOLD);
+  if (stockStatus === 'in_stock') return query.gt('stock_quantity', LOW_STOCK_THRESHOLD);
+  return query;
+}
+
+async function listProducts({ page, limit, search, category, stockStatus, minPrice, maxPrice }) {
   const from = (page - 1) * limit;
   const to = from + limit - 1;
 
@@ -19,6 +28,16 @@ async function listProducts({ page, limit, search }) {
   if (search) {
     const pattern = buildSearchPattern(search);
     query = query.or(`name.ilike.${pattern},description.ilike.${pattern}`);
+  }
+  if (category?.length) {
+    query = query.in('category', category);
+  }
+  query = applyStockStatusFilter(query, stockStatus);
+  if (minPrice !== undefined) {
+    query = query.gte('price', minPrice);
+  }
+  if (maxPrice !== undefined) {
+    query = query.lte('price', maxPrice);
   }
 
   const { data, error, count } = await query.order('created_at', { ascending: false }).range(from, to);

@@ -1,5 +1,15 @@
 import { createTheme } from '@mui/material/styles';
 
+export const serifFontFamily = ['Georgia', '"Times New Roman"', 'Times', 'serif'].join(',');
+export const monoFontFamily = [
+  'ui-monospace',
+  'SFMono-Regular',
+  'Menlo',
+  'Consolas',
+  '"Liberation Mono"',
+  'monospace',
+].join(',');
+
 const theme = createTheme({
   palette: {
     mode: 'light',
@@ -10,13 +20,13 @@ const theme = createTheme({
       contrastText: '#FFFFFF',
     },
     secondary: {
-      main: '#F97316',
-      light: '#FB923C',
-      dark: '#EA580C',
+      main: '#0F766E',
+      light: '#14B8A6',
+      dark: '#115E59',
       contrastText: '#FFFFFF',
     },
     background: {
-      default: '#F8FAFC',
+      default: '#F5F4EF',
       paper: '#FFFFFF',
     },
     text: {
@@ -41,12 +51,12 @@ const theme = createTheme({
       'Arial',
       'sans-serif',
     ].join(','),
-    h1: { fontWeight: 700 },
-    h2: { fontWeight: 700 },
-    h3: { fontWeight: 600 },
-    h4: { fontWeight: 600 },
-    h5: { fontWeight: 600 },
-    h6: { fontWeight: 600 },
+    h1: { fontWeight: 700, fontFamily: serifFontFamily },
+    h2: { fontWeight: 700, fontFamily: serifFontFamily },
+    h3: { fontWeight: 600, fontFamily: serifFontFamily },
+    h4: { fontWeight: 600, fontFamily: serifFontFamily },
+    h5: { fontWeight: 600, fontFamily: serifFontFamily },
+    h6: { fontWeight: 600, fontFamily: serifFontFamily },
     button: { fontWeight: 600, textTransform: 'none' },
   },
   components: {

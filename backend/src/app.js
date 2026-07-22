@@ -17,6 +17,14 @@ const logger = require('./utils/logger');
 
 const app = express();
 
+// Render (and most PaaS) put the app behind a reverse proxy, so Express
+// only sees the proxy's IP on req.ip unless told to trust the
+// X-Forwarded-For header. Without this, express-rate-limit either buckets
+// every user under one shared IP or throws a ValidationError when it sees
+// a forwarded-for header it wasn't told to trust. `1` = trust exactly one
+// hop, matching Render's single reverse proxy.
+app.set('trust proxy', 1);
+
 app.use(helmet());
 app.use(
   cors({

@@ -44,6 +44,53 @@ describe('product.service', () => {
       supabase.from.mockReturnValueOnce(createQueryBuilder({ data: null, error: { message: 'down' }, count: null }));
       await expect(productService.listProducts({ page: 1, limit: 12 })).rejects.toMatchObject({ statusCode: 500 });
     });
+
+    it('filters by one or more categories', async () => {
+      const builder = createQueryBuilder({ data: [], error: null, count: 0 });
+      supabase.from.mockReturnValueOnce(builder);
+
+      await productService.listProducts({ page: 1, limit: 12, category: ['Food', 'Fashion'] });
+
+      expect(builder.in).toHaveBeenCalledWith('category', ['Food', 'Fashion']);
+    });
+
+    it('filters out-of-stock products', async () => {
+      const builder = createQueryBuilder({ data: [], error: null, count: 0 });
+      supabase.from.mockReturnValueOnce(builder);
+
+      await productService.listProducts({ page: 1, limit: 12, stockStatus: 'out_of_stock' });
+
+      expect(builder.lte).toHaveBeenCalledWith('stock_quantity', 0);
+    });
+
+    it('filters low-stock products between 1 and the threshold', async () => {
+      const builder = createQueryBuilder({ data: [], error: null, count: 0 });
+      supabase.from.mockReturnValueOnce(builder);
+
+      await productService.listProducts({ page: 1, limit: 12, stockStatus: 'low_stock' });
+
+      expect(builder.gte).toHaveBeenCalledWith('stock_quantity', 1);
+      expect(builder.lte).toHaveBeenCalledWith('stock_quantity', 5);
+    });
+
+    it('filters in-stock products above the low-stock threshold', async () => {
+      const builder = createQueryBuilder({ data: [], error: null, count: 0 });
+      supabase.from.mockReturnValueOnce(builder);
+
+      await productService.listProducts({ page: 1, limit: 12, stockStatus: 'in_stock' });
+
+      expect(builder.gt).toHaveBeenCalledWith('stock_quantity', 5);
+    });
+
+    it('filters by a min/max price range', async () => {
+      const builder = createQueryBuilder({ data: [], error: null, count: 0 });
+      supabase.from.mockReturnValueOnce(builder);
+
+      await productService.listProducts({ page: 1, limit: 12, minPrice: 10, maxPrice: 50 });
+
+      expect(builder.gte).toHaveBeenCalledWith('price', 10);
+      expect(builder.lte).toHaveBeenCalledWith('price', 50);
+    });
   });
 
   describe('getProductById', () => {

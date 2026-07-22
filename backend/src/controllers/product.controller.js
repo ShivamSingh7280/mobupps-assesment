@@ -1,6 +1,11 @@
 const productService = require('../services/product.service');
 const asyncHandler = require('../utils/asyncHandler');
 const { sendSuccess } = require('../utils/ApiResponse');
+const { PRODUCT_CATEGORIES } = require('../validators/product.validator');
+
+const categories = asyncHandler(async (req, res) => {
+  sendSuccess(res, { data: PRODUCT_CATEGORIES });
+});
 
 const list = asyncHandler(async (req, res) => {
   const { items, meta } = await productService.listProducts(req.query);
@@ -27,4 +32,4 @@ const remove = asyncHandler(async (req, res) => {
   sendSuccess(res, { data: null, message: 'Product deleted' });
 });
 
-module.exports = { list, getOne, create, update, remove };
+module.exports = { categories, list, getOne, create, update, remove };

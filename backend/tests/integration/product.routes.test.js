@@ -49,6 +49,37 @@ describe('Product routes', () => {
     expect(res.status).toBe(400);
   });
 
+  it('lists products filtered by category, stock status, and price range', async () => {
+    const builder = createQueryBuilder({ data: [{ id: PRODUCT_ID, name: 'Widget' }], error: null, count: 1 });
+    supabase.from.mockReturnValueOnce(builder);
+
+    const res = await request(app)
+      .get('/api/v1/products?category=Food,Fashion&stockStatus=low_stock&minPrice=10&maxPrice=50')
+      .set('Authorization', authHeader());
+
+    expect(res.status).toBe(200);
+    expect(builder.in).toHaveBeenCalledWith('category', ['Food', 'Fashion']);
+    expect(builder.gte).toHaveBeenCalledWith('stock_quantity', 1);
+    expect(builder.lte).toHaveBeenCalledWith('stock_quantity', 5);
+  });
+
+  it('rejects an invalid category filter', async () => {
+    const res = await request(app).get('/api/v1/products?category=NotACategory').set('Authorization', authHeader());
+    expect(res.status).toBe(400);
+  });
+
+  it('rejects an invalid stock status filter', async () => {
+    const res = await request(app).get('/api/v1/products?stockStatus=bogus').set('Authorization', authHeader());
+    expect(res.status).toBe(400);
+  });
+
+  it('rejects minPrice greater than maxPrice', async () => {
+    const res = await request(app)
+      .get('/api/v1/products?minPrice=100&maxPrice=10')
+      .set('Authorization', authHeader());
+    expect(res.status).toBe(400);
+  });
+
   it('rejects an invalid product id', async () => {
     const res = await request(app).get('/api/v1/products/not-a-uuid').set('Authorization', authHeader());
     expect(res.status).toBe(400);
@@ -71,16 +102,47 @@ describe('Product routes', () => {
 
   it('creates a product', async () => {
     supabase.from.mockReturnValueOnce(
-      createQueryBuilder({ data: { id: PRODUCT_ID, name: 'Widget', price: 10, stock_quantity: 5 }, error: null })
+      createQueryBuilder({
+        data: { id: PRODUCT_ID, name: 'Widget', category: 'Electronics', price: 10, stock_quantity: 5 },
+        error: null,
+      })
     );
 
     const res = await request(app)
       .post('/api/v1/products')
       .set('Authorization', authHeader())
-      .send({ name: 'Widget', price: 10, stock_quantity: 5 });
+      .send({ name: 'Widget', category: 'Electronics', price: 10, stock_quantity: 5 });
 
     expect(res.status).toBe(201);
     expect(res.body.data.name).toBe('Widget');
+  });
+
+  it('rejects a create payload missing category', async () => {
+    const res = await request(app)
+      .post('/api/v1/products')
+      .set('Authorization', authHeader())
+      .send({ name: 'Widget', price: 10, stock_quantity: 5 });
+
+    expect(res.status).toBe(400);
+    expect(res.body.errors).toEqual(
+      expect.arrayContaining([expect.objectContaining({ field: 'category' })])
+    );
+  });
+
+  it('rejects a create payload with an invalid category', async () => {
+    const res = await request(app)
+      .post('/api/v1/products')
+      .set('Authorization', authHeader())
+      .send({ name: 'Widget', category: 'Toys', price: 10, stock_quantity: 5 });
+
+    expect(res.status).toBe(400);
+  });
+
+  it('lists the predefined product categories', async () => {
+    const res = await request(app).get('/api/v1/products/categories').set('Authorization', authHeader());
+
+    expect(res.status).toBe(200);
+    expect(res.body.data).toEqual(['Pharma', 'Food', 'Defence', 'Fashion', 'Electronics', 'Furniture']);
   });
 
   it('rejects an update with no fields', async () => {

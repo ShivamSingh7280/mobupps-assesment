@@ -4,7 +4,7 @@ import LoginForm from '../components/auth/LoginForm';
 
 export default function LoginPage() {
   return (
-    <AuthLayout title="Log in" subtitle="Enter your email and password to access the product catalog.">
+    <AuthLayout title="Sign in" subtitle="Access your seller dashboard.">
       <LoginForm />
     </AuthLayout>
   );

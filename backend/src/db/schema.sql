@@ -71,6 +71,22 @@ create table if not exists products (
   updated_at timestamptz not null default now()
 );
 
+-- category was added after the initial launch; backfill existing rows before
+-- enforcing not-null so this script stays safe to re-run against old data.
+alter table products add column if not exists category text;
+update products set category = 'Food' where category is null;
+alter table products alter column category set not null;
+
+do $$
+begin
+  if not exists (
+    select 1 from pg_constraint where conname = 'products_category_check'
+  ) then
+    alter table products add constraint products_category_check
+      check (category in ('Pharma', 'Food', 'Defence', 'Fashion', 'Electronics', 'Furniture'));
+  end if;
+end $$;
+
 drop trigger if exists trg_products_updated_at on products;
 create trigger trg_products_updated_at
   before update on products
@@ -79,5 +95,6 @@ create trigger trg_products_updated_at
 create index if not exists idx_products_name_trgm on products using gin (name gin_trgm_ops);
 create index if not exists idx_products_description_trgm on products using gin (description gin_trgm_ops);
 create index if not exists idx_products_created_at on products(created_at desc);
+create index if not exists idx_products_category on products(category);
 
 alter table products enable row level security;

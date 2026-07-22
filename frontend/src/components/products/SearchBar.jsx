@@ -9,6 +9,12 @@ function SearchBar({ value, onChange, isSearching }) {
       placeholder="Search products by name or description…"
       value={value}
       onChange={(event) => onChange(event.target.value)}
+      sx={{
+        '& .MuiOutlinedInput-root': {
+          borderRadius: 999,
+          bgcolor: 'background.paper',
+        },
+      }}
       slotProps={{
         htmlInput: { 'aria-label': 'Search products by name or description' },
         input: {

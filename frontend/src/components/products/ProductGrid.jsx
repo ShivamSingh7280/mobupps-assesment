@@ -1,7 +1,6 @@
 import { Grid, Box, Typography } from '@mui/material';
 import SearchOffOutlinedIcon from '@mui/icons-material/SearchOffOutlined';
 import ProductCard from './ProductCard';
-import AddProductCard from './AddProductCard';
 import LoadingSkeleton from '../common/LoadingSkeleton';
 import EmptyState from '../common/EmptyState';
 
@@ -13,7 +12,7 @@ export default function ProductGrid({
   isError,
   errorMessage,
   searchTerm,
-  onAddClick,
+  hasActiveFilters,
   onEdit,
   onDelete,
   onRetry,
@@ -31,20 +30,16 @@ export default function ProductGrid({
 
   return (
     <Grid container spacing={3}>
-      <Grid item xs={12} sm={6} md={4} lg={3}>
-        <AddProductCard onClick={onAddClick} />
-      </Grid>
-
       {isLoading &&
         Array.from({ length: SKELETON_COUNT }).map((_, index) => (
-          <Grid item xs={12} sm={6} md={4} lg={3} key={index}>
+          <Grid item xs={12} sm={6} md={4} key={index}>
             <LoadingSkeleton />
           </Grid>
         ))}
 
       {!isLoading &&
         products.map((product) => (
-          <Grid item xs={12} sm={6} md={4} lg={3} key={product.id}>
+          <Grid item xs={12} sm={6} md={4} key={product.id}>
             <ProductCard product={product} onEdit={onEdit} onDelete={onDelete} />
           </Grid>
         ))}
@@ -54,7 +49,11 @@ export default function ProductGrid({
           <Box sx={{ textAlign: 'center', py: 6 }}>
             <SearchOffOutlinedIcon sx={{ fontSize: 40, color: 'text.disabled', mb: 1 }} />
             <Typography variant="body1" color="text.secondary">
-              {searchTerm ? `No products found for "${searchTerm}".` : 'No products yet — add your first one!'}
+              {searchTerm
+                ? `No products found for "${searchTerm}".`
+                : hasActiveFilters
+                  ? 'No products match your filters.'
+                  : 'No products yet — add your first one!'}
             </Typography>
           </Box>
         </Grid>
