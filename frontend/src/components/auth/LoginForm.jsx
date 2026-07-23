@@ -7,11 +7,13 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useNavigate, useLocation, Link as RouterLink } from 'react-router-dom';
 
 // mui
-import { Stack, TextField, Button, Alert, InputAdornment, Typography, Link } from '@mui/material';
+import { Stack, TextField, Button, Alert, InputAdornment, IconButton, Typography, Link } from '@mui/material';
 
 // icons
 import EmailOutlinedIcon from '@mui/icons-material/EmailOutlined';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 
 // schema
 import { loginSchema } from '../../utils/validationSchemas';
@@ -24,6 +26,7 @@ export default function LoginForm() {
   const navigate = useNavigate();
   const location = useLocation();
   const [serverError, setServerError] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
 
   const {
     register,
@@ -70,7 +73,7 @@ export default function LoginForm() {
 
       <TextField
         label="Password"
-        type="password"
+        type={showPassword ? 'text' : 'password'}
         autoComplete="current-password"
         fullWidth
         {...register('password')}
@@ -81,6 +84,18 @@ export default function LoginForm() {
             startAdornment: (
               <InputAdornment position="start">
                 <LockOutlinedIcon fontSize="small" color="action" />
+              </InputAdornment>
+            ),
+            endAdornment: (
+              <InputAdornment position="end">
+                <IconButton
+                  onClick={() => setShowPassword((prev) => !prev)}
+                  edge="end"
+                  size="small"
+                  aria-label={showPassword ? 'Hide password' : 'Show password'}
+                >
+                  {showPassword ? <VisibilityOffIcon fontSize="small" /> : <VisibilityIcon fontSize="small" />}
+                </IconButton>
               </InputAdornment>
             ),
           },

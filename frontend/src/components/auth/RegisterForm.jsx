@@ -8,12 +8,14 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useNavigate, Link as RouterLink } from 'react-router-dom';
 
 // mui
-import { Stack, TextField, Button, Alert, InputAdornment, Typography, Link } from '@mui/material';
+import { Stack, TextField, Button, Alert, InputAdornment, IconButton, Typography, Link } from '@mui/material';
 
 // mui-icons
 import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
 import EmailOutlinedIcon from '@mui/icons-material/EmailOutlined';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 
 // schema
 import { registerSchema } from '../../utils/validationSchemas';
@@ -25,6 +27,8 @@ export default function RegisterForm() {
   const { register: registerUser } = useAuth();
   const navigate = useNavigate();
   const [serverError, setServerError] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const {
     register,
@@ -89,7 +93,7 @@ export default function RegisterForm() {
 
       <TextField
         label="Password"
-        type="password"
+        type={showPassword ? 'text' : 'password'}
         autoComplete="new-password"
         fullWidth
         {...register('password')}
@@ -102,13 +106,25 @@ export default function RegisterForm() {
                 <LockOutlinedIcon fontSize="small" color="action" />
               </InputAdornment>
             ),
+            endAdornment: (
+              <InputAdornment position="end">
+                <IconButton
+                  onClick={() => setShowPassword((prev) => !prev)}
+                  edge="end"
+                  size="small"
+                  aria-label={showPassword ? 'Hide password' : 'Show password'}
+                >
+                  {showPassword ? <VisibilityOffIcon fontSize="small" /> : <VisibilityIcon fontSize="small" />}
+                </IconButton>
+              </InputAdornment>
+            ),
           },
         }}
       />
 
       <TextField
         label="Confirm Password"
-        type="password"
+        type={showConfirmPassword ? 'text' : 'password'}
         autoComplete="new-password"
         fullWidth
         {...register('confirmPassword')}
@@ -119,6 +135,18 @@ export default function RegisterForm() {
             startAdornment: (
               <InputAdornment position="start">
                 <LockOutlinedIcon fontSize="small" color="action" />
+              </InputAdornment>
+            ),
+            endAdornment: (
+              <InputAdornment position="end">
+                <IconButton
+                  onClick={() => setShowConfirmPassword((prev) => !prev)}
+                  edge="end"
+                  size="small"
+                  aria-label={showConfirmPassword ? 'Hide password' : 'Show password'}
+                >
+                  {showConfirmPassword ? <VisibilityOffIcon fontSize="small" /> : <VisibilityIcon fontSize="small" />}
+                </IconButton>
               </InputAdornment>
             ),
           },
